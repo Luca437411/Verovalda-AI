@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vera Valda AI</title>
+
+<style>
+* {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg, #7b2cbf, #c77dff, #ff8fab);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+}
+
+.app {
+width: 100%;
+max-width: 700px;
+height: 750px;
+background: white;
+border-radius: 25px;
+overflow: hidden;
+box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+display: flex;
+flex-direction: column;
+}
+
+.header {
+background: linear-gradient(90deg, #9d4edd, #ff4d9d);
+color: white;
+padding: 22px;
+text-align: center;
+}
+
+.header h1 {
+margin: 0;
+font-size: 30px;
+}
+
+.header p {
+margin: 7px 0 0;
+opacity: 0.9;
+}
+
+#chat {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+background: #faf7ff;
+}
+
+.message {
+display: flex;
+margin-bottom: 15px;
+}
+
+.message.user {
+justify-content: flex-end;
+}
+
+.bubble {
+max-width: 75%;
+padding: 13px 17px;
+border-radius: 18px;
+line-height: 1.4;
+font-size: 16px;
+}
+
+.ai .bubble {
+background: #eadcff;
+color: #3c096c;
+border-bottom-left-radius: 5px;
+}
+
+.user .bubble {
+background: #ff4d9d;
+color: white;
+border-bottom-right-radius: 5px;
+}
+
+.input-area {
+display: flex;
+gap: 10px;
+padding: 15px;
+background: white;
+border-top: 1px solid #ddd;
+}
+
+#userInput {
+flex: 1;
+border: 2px solid #d8b4fe;
+border-radius: 15px;
+padding: 13px;
+font-size: 16px;
+outline: none;
+}
+
+#userInput:focus {
+border-color: #9d4edd;
+}
+
+button {
+border: none;
+border-radius: 15px;
+padding: 0 20px;
+background: #9d4edd;
+color: white;
+font-size: 16px;
+cursor: pointer;
+}
+
+button:hover {
+background: #7b2cbf;
+}
+
+.typing {
+font-style: italic;
+opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+<h1>Vera Valda AI</h1>
+<p>AI Assistant</p>
+</div>
+
+<div id="chat">
+
+<div class="message ai">
+<div class="bubble">
+Bună! Eu sunt Vera Valda AI. Cu ce te pot ajuta?
+</div>
+</div>
+
+</div>
+
+<div class="input-area">
+
+<input
+id="userInput"
+type="text"
+placeholder="Scrie întrebarea aici..."
+autocomplete="off"
+>
+
+<button onclick="sendMessage()">
+Trimite
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const input = document.getElementById("userInput");
+const chat = document.getElementById("chat");
+
+
+// --------------------------------------------------
+// ADAUGĂ UN MESAJ ÎN CHAT
+// --------------------------------------------------
+
+function addMessage(text, sender) {
+
+const message = document.createElement("div");
+
+message.className = "message " + sender;
+
+const bubble = document.createElement("div");
+
+bubble.className = "bubble";
+
+bubble.textContent = text;
+
+message.appendChild(bubble);
+
+chat.appendChild(message);
+
+chat.scrollTop = chat.scrollHeight;
+}
+
+
+// --------------------------------------------------
+// MATEMATICĂ SIMPLĂ
+// --------------------------------------------------
+
+function solveMath(text) {
+
+let expression = text
+.toLowerCase()
+.replace(/cât face/g, "")
+.replace(/cat face/g, "")
+.replace(/calculează/g, "")
+.replace(/calculeaza/g, "")
+.replace(/=/g, "")
+.trim();
+
+// Transformăm "x" în înmulțire
+expression = expression.replace(/x/g, "*");
+
+// Permitem doar calcule simple
+if (!/^[0-9+\-*/().\s]+$/.test(expression)) {
+return null;
+}
+
+try {
+
+const result = Function(
+'"use strict"; return (' + expression + ')'
+)();
+
+if (typeof result === "number" && isFinite(result)) {
+return result;
+}
+
+} catch (error) {
+return null;
+}
+
+return null;
+}
+
+
+// --------------------------------------------------
+// CREIERUL VEREI VALDA
+// --------------------------------------------------
+
+function getAIResponse(text) {
+
+const lower = text
+.toLowerCase()
+.trim();
+
+
+// SALUT
+
+if (
+lower === "bună" ||
+lower === "buna" ||
+lower === "salut" ||
+lower === "hello" ||
+lower === "hei"
+) {
+return "Bună! Ce faci?";
+}
+
+
+// CUM TE CHEAMĂ?
+
+if (
+lower.includes("cum te cheamă") ||
+lower.includes("cum te cheama") ||
+lower.includes("cine ești") ||
+lower.includes("cine esti")
+) {
+return "Eu sunt Vera Valda AI.";
+}
+
+
+// CE POȚI FACE?
+
+if (
+lower.includes("ce poți face") ||
+lower.includes("ce poti face")
+) {
+return "Pot să răspund la întrebări simple, să fac calcule și să discut cu tine.";
+}
+
+
+// MULȚUMESC
+
+if (
+lower.includes("mulțumesc") ||
+lower.includes("multumesc") ||
+lower.includes("mersi")
+) {
+return "Cu plăcere! 😊";
+}
+
+
+// DE CE?
+
+if (
+lower === "de ce" ||
+lower.startsWith("de ce?")
+) {
+return "Pentru că așa funcționează situația despre care vorbim. Dacă îmi dai mai multe detalii, pot să-ți explic.";
+}
+
+
+// DESPRE PERSOANA MENȚIONATĂ
+
+if (
+lower.includes("blondă cu părul negru") ||
+lower.includes("blonda cu parul negru")
+) {
+return "Este persoana despre care mi-ai spus. Dacă vrei un răspuns diferit, putem programa unul aici.";
+}
+
+
+// VREMEA / EXEMPLU
+
+if (lower.includes("ce faci")) {
+return "Sunt bine! Sunt aici și gata să te ajut.";
+}
+
+
+// MATEMATICĂ
+
+const mathResult = solveMath(lower);
+
+if (mathResult !== null) {
+
+return "Răspunsul este: " + mathResult;
+}
+
+
+// ÎNTREBĂRI SIMPLE
+
+if (lower.includes("ce este html")) {
+return "HTML este limbajul folosit pentru structura unei pagini web.";
+}
+
+
+if (lower.includes("ce este css")) {
+return "CSS este folosit pentru designul și aspectul unei pagini web.";
+}
+
+
+if (lower.includes("ce este javascript")) {
+return "JavaScript este un limbaj de programare care poate face o pagină web interactivă.";
+}
+
+
+// RĂSPUNS IMPLICIT
+
+return "Încă nu știu răspunsul la această întrebare. Putem programa împreună un răspuns pentru ea!";
+}
+
+
+// --------------------------------------------------
+// TRIMITEREA MESAJULUI
+// --------------------------------------------------
+
+function sendMessage() {
+
+const text = input.value.trim();
+
+if (text === "") {
+return;
+}
+
+
+// Arată mesajul utilizatorului
+
+addMessage(text, "user");
+
+
+// Curăță căsuța
+
+input.value = "";
+
+
+// Simulăm puțin că AI-ul gândește
+
+const typing = document.createElement("div");
+
+typing.className = "message ai";
+
+typing.id = "typing";
+
+typing.innerHTML =
+'<div class="bubble typing">Vera Valda AI scrie...</div>';
+
+chat.appendChild(typing);
+
+chat.scrollTop = chat.scrollHeight;
+
+
+setTimeout(function() {
+
+const oldTyping = document.getElementById("typing");
+
+if (oldTyping) {
+oldTyping.remove();
+}
+
+
+const response = getAIResponse(text);
+
+addMessage(response, "ai");
+
+}, 600);
+}
+
+
+// --------------------------------------------------
+// ENTER PENTRU TRIMITERE
+// --------------------------------------------------
+
+input.addEventListener("keydown", function(event) {
+
+if (event.key === "Enter") {
+
+sendMessage();
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
